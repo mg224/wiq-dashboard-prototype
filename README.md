@@ -10,6 +10,44 @@ A comprehensive healthcare workforce management dashboard for monitoring nurse r
 - **Financial Impact Analysis**: Value-to-enterprise calculations and retention multipliers
 - **Interactive Charts**: Real-time data visualization using Recharts
 
+## Installing Dependencies
+
+Install Necessary Packages
+
+```bash
+npm install \
+  recharts \
+  @radix-ui/react-avatar \
+  @radix-ui/react-dialog \
+  @radix-ui/react-dropdown-menu \
+  @radix-ui/react-label \
+  @radix-ui/react-progress \
+  @radix-ui/react-separator \
+  @radix-ui/react-slot \
+  @radix-ui/react-tabs \
+  @radix-ui/react-toast \
+  @radix-ui/react-tooltip \
+  class-variance-authority \
+  clsx \
+  lucide-react \
+  tailwind-merge \
+  tailwindcss-animate
+
+```
+
+Install pnpm for easier installation of ShadCN UI Components
+
+```bash
+npm install -g pnpm
+```
+
+Install ShadCN UI Components
+
+```bash
+npx shadcn@latest init
+npx shadcn@latest add avatar button card badge tabs separator
+```
+
 ## AWS EC2 Deployment
 
 ### Prerequisites
