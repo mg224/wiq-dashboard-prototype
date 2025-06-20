@@ -1,0 +1,90 @@
+# Healthcare Dashboard
+
+A comprehensive healthcare workforce management dashboard for monitoring nurse risk analytics, turnover, and retention planning.
+
+## Features
+
+- **Dashboard Overview**: Workforce metrics, supply/demand analytics, and turnover insights
+- **Individual Nurse Profiles**: Detailed risk analytics, SDOH insights, and retention planning
+- **Risk Assessment**: High-risk and moderate-risk nurse identification
+- **Financial Impact Analysis**: Value-to-enterprise calculations and retention multipliers
+- **Interactive Charts**: Real-time data visualization using Recharts
+
+## AWS EC2 Deployment
+
+### Prerequisites
+
+- AWS EC2 instance (t3.medium or larger recommended)
+- Security group allowing inbound traffic on ports 22 (SSH), 80 (HTTP), and 3000
+- Key pair for SSH access
+
+### Deployment Steps
+
+1. **Connect to your EC2 instance:**
+   \`\`\`bash
+   ssh -i your-key.pem ec2-user@your-ec2-public-ip
+   \`\`\`
+
+2. **Upload your application files to the server** (using SCP, Git, or S3)
+
+3. **Run the deployment script:**
+   \`\`\`bash
+   chmod +x deploy.sh
+   ./deploy.sh
+   \`\`\`
+
+4. **Access your application:**
+   - Direct access: `http://your-ec2-public-ip:3000`
+   - Via Nginx (if configured): `http://your-ec2-public-ip`
+
+### Manual Deployment
+
+If you prefer manual deployment:
+
+1. Install Docker and Docker Compose
+2. Build the application: `docker-compose build`
+3. Start the services: `docker-compose up -d`
+
+### Environment Variables
+
+Create a `.env.local` file for any environment-specific configurations:
+
+\`\`\`env
+NODE_ENV=production
+PORT=3000
+\`\`\`
+
+### Monitoring
+
+Monitor your application logs:
+\`\`\`bash
+docker-compose logs -f healthcare-dashboard
+\`\`\`
+
+### Scaling
+
+For production use, consider:
+- Using an Application Load Balancer
+- Setting up auto-scaling groups
+- Implementing health checks
+- Using RDS for database storage
+- Setting up CloudWatch monitoring
+
+## Development
+
+To run locally:
+
+\`\`\`bash
+npm install
+npm run dev
+\`\`\`
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Technology Stack
+
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui components
+- **Charts**: Recharts
+- **Deployment**: Docker, Docker Compose
+- **Infrastructure**: AWS EC2, Nginx (optional)
