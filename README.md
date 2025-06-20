@@ -10,9 +10,11 @@ A comprehensive healthcare workforce management dashboard for monitoring nurse r
 - **Financial Impact Analysis**: Value-to-enterprise calculations and retention multipliers
 - **Interactive Charts**: Real-time data visualization using Recharts
 
-## Installing Dependencies
+## Installing Dependencies & Running Locally
 
-Install Necessary Packages
+First, clone this repository using git clone and cd into the folder.
+
+Install the necessary packages
 
 ```bash
 npm install \
@@ -47,6 +49,13 @@ Install ShadCN UI Components
 npx shadcn@latest init
 npx shadcn@latest add avatar button card badge tabs separator
 ```
+
+To run the app locally, run 
+
+```bash
+npm run dev
+```
+in your terminal in the same directory.
 
 ## AWS EC2 Deployment
 
