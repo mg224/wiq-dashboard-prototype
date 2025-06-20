@@ -403,8 +403,7 @@ export default function NurseProfile({ nurseId }: NurseProfileProps) {
             </div>
 
             {/* Right Sidebar */}
-            <div className="space-y-6">
-              <div className="py-[200px] border bg-red-200">hello</div>
+            <div className="space-y-6 h-full pt-14">
               {/* Retention Plan */}
               <Card>
                 <CardHeader>
