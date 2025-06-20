@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Settings, Bell, ChevronRight, Plus, MoreHorizontal } from "lucide-react"
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import Link from "next/link"
+import { allNurses } from "../lib/nurse-data"
 
 const supplyDemandData = [
   { day: 1, supply: 750, demand: 800 },
@@ -56,22 +57,8 @@ const turnoverData = [
   { month: "Dec", rate: 25 },
 ]
 
-const highRiskNurses = [
-  { name: "Jane Doe", score: 95, avatar: "/placeholder.svg?height=32&width=32" },
-  { name: "Lana Steiner", score: 92, avatar: "/placeholder.svg?height=32&width=32" },
-  { name: "Jessica Brown", score: 90, avatar: "/placeholder.svg?height=32&width=32" },
-  { name: "Emily Davis", score: 88, avatar: "/placeholder.svg?height=32&width=32" },
-  { name: "Karen White", score: 86, avatar: "/placeholder.svg?height=32&width=32" },
-  { name: "Phoenix Baker", score: 86, avatar: "/placeholder.svg?height=32&width=32" },
-  { name: "Demi Wilkinson", score: 83, avatar: "/placeholder.svg?height=32&width=32" },
-  { name: "Candice Wu", score: 82, avatar: "/placeholder.svg?height=32&width=32" },
-  { name: "Natali Craig", score: 81, avatar: "/placeholder.svg?height=32&width=32" },
-]
-
-const moderateRiskNurses = [
-  { name: "Jane Doe", score: 79, avatar: "/placeholder.svg?height=32&width=32" },
-  { name: "Lana Steiner", score: 75, avatar: "/placeholder.svg?height=32&width=32" },
-]
+const highRiskNurses = allNurses.filter((nurse) => nurse.riskLevel === "high")
+const moderateRiskNurses = allNurses.filter((nurse) => nurse.riskLevel === "moderate")
 
 export default function Component() {
   return (
@@ -122,13 +109,13 @@ export default function Component() {
                   <div className="space-y-2">
                     {highRiskNurses.map((nurse, index) => (
                       <Link
-                        key={index}
-                        href={`/nurse/${nurse.name.toLowerCase().replace(" ", "-")}`}
+                        key={nurse.id}
+                        href={`/nurse/${nurse.id}`}
                         className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src={nurse.avatar || "/placeholder.svg"} />
+                            <AvatarImage src="/placeholder.svg?height=32&width=32" />
                             <AvatarFallback>
                               {nurse.name
                                 .split(" ")
@@ -154,13 +141,13 @@ export default function Component() {
                   <div className="space-y-2">
                     {moderateRiskNurses.map((nurse, index) => (
                       <Link
-                        key={index}
-                        href={`/nurse/${nurse.name.toLowerCase().replace(" ", "-")}`}
+                        key={nurse.id}
+                        href={`/nurse/${nurse.id}`}
                         className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src={nurse.avatar || "/placeholder.svg"} />
+                            <AvatarImage src="/placeholder.svg?height=32&width=32" />
                             <AvatarFallback>
                               {nurse.name
                                 .split(" ")

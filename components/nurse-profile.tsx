@@ -8,43 +8,77 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Settings, Bell, ChevronRight, MoreHorizontal } from "lucide-react"
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import Link from "next/link"
-
-const riskOutcomesData = [
-  { time: 0, hazard: 0.2 },
-  { time: 1, hazard: 0.25 },
-  { time: 2, hazard: 0.3 },
-  { time: 3, hazard: 0.28 },
-  { time: 4, hazard: 0.32 },
-  { time: 5, hazard: 0.35 },
-  { time: 6, hazard: 0.4 },
-  { time: 7, hazard: 0.38 },
-  { time: 8, hazard: 0.42 },
-  { time: 9, hazard: 0.45 },
-  { time: 10, hazard: 0.48 },
-  { time: 11, hazard: 0.52 },
-  { time: 12, hazard: 0.55 },
-  { time: 13, hazard: 0.58 },
-  { time: 14, hazard: 0.62 },
-  { time: 15, hazard: 0.65 },
-  { time: 16, hazard: 0.68 },
-  { time: 17, hazard: 0.72 },
-  { time: 18, hazard: 0.75 },
-  { time: 19, hazard: 0.78 },
-  { time: 20, hazard: 0.82 },
-]
-
-const sdohData = [
-  { category: "Socioeconomic", score: 70, color: "bg-orange-400" },
-  { category: "Household Composition and Disability", score: 92, color: "bg-red-500" },
-  { category: "Minority Status and Language", score: 65, color: "bg-orange-400" },
-  { category: "Housing Type and Transportation", score: 97, color: "bg-red-500" },
-]
+import { getNurseById, generateDefaultNurseData, allNurses, type Nurse } from "../lib/nurse-data"
+import { useEffect, useState } from "react"
 
 interface NurseProfileProps {
-  nurseId?: string
+  nurseId: string
 }
 
-export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps) {
+export default function NurseProfile({ nurseId }: NurseProfileProps) {
+  const [nurse, setNurse] = useState<Nurse | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Simulate API call delay
+    const fetchNurseData = async () => {
+      setLoading(true)
+
+      // Try to get nurse from detailed data first
+      let nurseData = getNurseById(nurseId)
+
+      // If not found, try to find in the all nurses list and generate default data
+      if (!nurseData) {
+        const nurseInfo = allNurses.find((n) => n.id === nurseId)
+        if (nurseInfo) {
+          nurseData = generateDefaultNurseData(nurseInfo.id, nurseInfo.name, nurseInfo.score, nurseInfo.riskLevel)
+        }
+      }
+
+      // If still not found, create a fallback
+      if (!nurseData) {
+        nurseData = generateDefaultNurseData(
+          nurseId,
+          nurseId
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "),
+          75,
+          "moderate",
+        )
+      }
+
+      setNurse(nurseData)
+      setLoading(false)
+    }
+
+    fetchNurseData()
+  }, [nurseId])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading nurse profile...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!nurse) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Nurse not found</p>
+          <Link href="/" className="text-blue-600 hover:underline mt-2 inline-block">
+            Return to Dashboard
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -87,7 +121,7 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
             Dashboard
           </Link>
           <ChevronRight className="h-4 w-4 text-gray-400" />
-          <span className="bg-blue-900 text-white px-3 py-1 rounded-md font-medium">Jane Doe</span>
+          <span className="bg-blue-900 text-white px-3 py-1 rounded-md font-medium">{nurse.name}</span>
         </div>
       </div>
 
@@ -98,12 +132,20 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
             {/* Profile Section */}
             <div className="text-center">
               <Avatar className="h-20 w-20 mx-auto mb-4">
-                <AvatarImage src="/placeholder.svg?height=80&width=80" />
-                <AvatarFallback className="text-xl">JD</AvatarFallback>
+                <AvatarImage src={nurse.avatar || "/placeholder.svg"} />
+                <AvatarFallback className="text-xl">
+                  {nurse.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
               </Avatar>
-              <h2 className="text-xl font-semibold mb-2">Jane Doe</h2>
-              <Badge variant="destructive" className="bg-red-100 text-red-700">
-                High risk: 95
+              <h2 className="text-xl font-semibold mb-2">{nurse.name}</h2>
+              <Badge
+                variant={nurse.riskLevel === "high" ? "destructive" : "secondary"}
+                className={nurse.riskLevel === "high" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}
+              >
+                {nurse.riskLevel === "high" ? "High" : "Moderate"} risk: {nurse.score}
               </Badge>
             </div>
 
@@ -120,27 +162,27 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
               <CardContent className="space-y-3">
                 <div>
                   <span className="text-sm text-gray-600">Role: </span>
-                  <span className="font-medium">Nurse</span>
+                  <span className="font-medium">{nurse.basicInfo.role}</span>
                 </div>
                 <div>
                   <span className="text-sm text-gray-600">Tenure: </span>
-                  <span className="font-medium">5 years</span>
+                  <span className="font-medium">{nurse.basicInfo.tenure}</span>
                 </div>
                 <div>
                   <span className="text-sm text-gray-600">Employment Type: </span>
-                  <span className="font-medium">Full-Time</span>
+                  <span className="font-medium">{nurse.basicInfo.employmentType}</span>
                 </div>
                 <div>
                   <span className="text-sm text-gray-600">Schedule Type: </span>
-                  <span className="font-medium">Rotating Shifts</span>
+                  <span className="font-medium">{nurse.basicInfo.scheduleType}</span>
                 </div>
                 <div>
                   <span className="text-sm text-gray-600">Education: </span>
-                  <span className="font-medium">BSN, CCRN</span>
+                  <span className="font-medium">{nurse.basicInfo.education}</span>
                 </div>
                 <div>
                   <span className="text-sm text-gray-600">Licensure: </span>
-                  <span className="font-medium">Active RN License (State GA)</span>
+                  <span className="font-medium">{nurse.basicInfo.licensure}</span>
                 </div>
               </CardContent>
             </Card>
@@ -159,11 +201,13 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <div className="text-sm text-gray-600 mb-1">Value to Enterprise</div>
-                    <div className="text-2xl font-bold">$144,934</div>
+                    <div className="text-2xl font-bold">
+                      ${nurse.financialImpact.valueToEnterprise.toLocaleString()}
+                    </div>
                   </div>
                   <div>
                     <div className="text-sm text-gray-600 mb-1">Retain Multiplier</div>
-                    <div className="text-2xl font-bold">1.90x</div>
+                    <div className="text-2xl font-bold">{nurse.financialImpact.retainMultiplier}x</div>
                   </div>
                 </div>
 
@@ -175,22 +219,22 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-sm">Committee Lead Contribution</span>
-                      <span className="font-medium">1.30x</span>
+                      <span className="font-medium">{nurse.financialImpact.breakdown.committeeLeadContribution}x</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm">Preceptor Contribution</span>
-                      <span className="font-medium">1.45x</span>
+                      <span className="font-medium">{nurse.financialImpact.breakdown.preceptorContribution}x</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm">CRRT/ECMO Specialty</span>
-                      <span className="font-medium">1.15x</span>
+                      <span className="text-sm">Specialty Contribution</span>
+                      <span className="font-medium">{nurse.financialImpact.breakdown.specialtyContribution}x</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t">
                   <div className="text-sm text-gray-600 mb-2">Recommendation:</div>
-                  <div className="text-sm">Proactive retention to avoid financial loss.</div>
+                  <div className="text-sm">{nurse.financialImpact.recommendation}</div>
                 </div>
               </CardContent>
             </Card>
@@ -219,7 +263,7 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                       <CardContent>
                         <div className="h-64">
                           <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={riskOutcomesData}>
+                            <LineChart data={nurse.riskAnalytics.riskOutcomes}>
                               <XAxis
                                 dataKey="time"
                                 axisLine={false}
@@ -278,11 +322,26 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                           </div>
                           <div className="mt-4">
                             <div className="h-8 bg-gray-200 rounded flex">
-                              <div className="bg-blue-900 h-full rounded-l" style={{ width: "40%" }}></div>
-                              <div className="bg-blue-400 h-full" style={{ width: "25%" }}></div>
-                              <div className="bg-blue-200 h-full" style={{ width: "20%" }}></div>
-                              <div className="bg-gray-400 h-full" style={{ width: "10%" }}></div>
-                              <div className="bg-black h-full rounded-r" style={{ width: "5%" }}></div>
+                              <div
+                                className="bg-blue-900 h-full rounded-l"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.overtimeHours}%` }}
+                              ></div>
+                              <div
+                                className="bg-blue-400 h-full"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.workload}%` }}
+                              ></div>
+                              <div
+                                className="bg-blue-200 h-full"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.patientAcuity}%` }}
+                              ></div>
+                              <div
+                                className="bg-gray-400 h-full"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.workEnvironment}%` }}
+                              ></div>
+                              <div
+                                className="bg-black h-full rounded-r"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.other}%` }}
+                              ></div>
                             </div>
                           </div>
                         </div>
@@ -295,7 +354,8 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                     <CardHeader>
                       <CardTitle>SDOH Insight</CardTitle>
                       <p className="text-sm text-gray-600">
-                        External factors influencing Jane's risk profile based on CDC Social Vulnerability Index (SVI).
+                        External factors influencing {nurse.name.split(" ")[0]}'s risk profile based on CDC Social
+                        Vulnerability Index (SVI).
                       </p>
                     </CardHeader>
                     <CardContent>
@@ -305,7 +365,7 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                           <span></span>
                           <span>Score (0-100)</span>
                         </div>
-                        {sdohData.map((item, index) => (
+                        {nurse.riskAnalytics.sdohInsights.map((item, index) => (
                           <div key={index} className="grid grid-cols-3 gap-4 items-center">
                             <span className="text-sm">{item.category}</span>
                             <div className="flex-1">
@@ -327,7 +387,7 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                 <TabsContent value="turnover">
                   <Card>
                     <CardContent className="p-6">
-                      <div className="text-center text-gray-500">Turnover analytics content would go here</div>
+                      <div className="text-center text-gray-500">Turnover analytics for {nurse.name} would go here</div>
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -335,7 +395,7 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                 <TabsContent value="burnout">
                   <Card>
                     <CardContent className="p-6">
-                      <div className="text-center text-gray-500">Burnout analytics content would go here</div>
+                      <div className="text-center text-gray-500">Burnout analytics for {nurse.name} would go here</div>
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -344,6 +404,7 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
 
             {/* Right Sidebar */}
             <div className="space-y-6">
+              <div className="py-[200px] border bg-red-200">hello</div>
               {/* Retention Plan */}
               <Card>
                 <CardHeader>
@@ -356,22 +417,12 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex gap-3">
-                      <span className="text-sm font-medium">1.</span>
-                      <span className="text-sm">Flexible shift scheduling</span>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="text-sm font-medium">2.</span>
-                      <span className="text-sm">Competitive compensation and bonuses</span>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="text-sm font-medium">3.</span>
-                      <span className="text-sm">Mental health and wellness support</span>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="text-sm font-medium">4.</span>
-                      <span className="text-sm">Work-life balance initiatives</span>
-                    </div>
+                    {nurse.retentionPlan.map((item, index) => (
+                      <div key={index} className="flex gap-3">
+                        <span className="text-sm font-medium">{index + 1}.</span>
+                        <span className="text-sm">{item}</span>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -388,26 +439,12 @@ export default function NurseProfile({ nurseId = "jane-doe" }: NurseProfileProps
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex gap-3">
-                      <span className="text-sm font-medium">1.</span>
-                      <span className="text-sm">Workload and recognition conversation</span>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="text-sm font-medium">2.</span>
-                      <span className="text-sm">Childcare Support</span>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="text-sm font-medium">3.</span>
-                      <span className="text-sm">Transportation Support</span>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="text-sm font-medium">4.</span>
-                      <span className="text-sm">Shift Redistribution Using Software Insights</span>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="text-sm font-medium">5.</span>
-                      <span className="text-sm">Schedule Adjustments to Prioritize Rest</span>
-                    </div>
+                    {nurse.interventions.map((item, index) => (
+                      <div key={index} className="flex gap-3">
+                        <span className="text-sm font-medium">{index + 1}.</span>
+                        <span className="text-sm">{item}</span>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
