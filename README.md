@@ -55,7 +55,7 @@ To run the app locally, run
 ```bash
 npm run dev
 ```
-in your terminal in the same directory.
+in your terminal in the same directory and open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## AWS EC2 Deployment
 
@@ -116,17 +116,6 @@ For production use, consider:
 - Implementing health checks
 - Using RDS for database storage
 - Setting up CloudWatch monitoring
-
-## Development
-
-To run locally:
-
-\`\`\`bash
-npm install
-npm run dev
-\`\`\`
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Technology Stack
 
