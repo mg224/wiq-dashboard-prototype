@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Settings, Bell, ChevronRight, Plus, MoreHorizontal } from "lucide-react"
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from "recharts"
 import Link from "next/link"
 import { allNurses } from "../lib/nurse-data"
+import { useState } from "react"
 
 const supplyDemandData = [
   { day: 1, supply: 750, demand: 800 },
@@ -61,6 +62,9 @@ const highRiskNurses = allNurses.filter((nurse) => nurse.riskLevel === "high")
 const moderateRiskNurses = allNurses.filter((nurse) => nurse.riskLevel === "moderate")
 
 export default function Component() {
+  const [sdTimeFrame, setSDTimeFrame] = useState("30d")
+  const [turnoverTimeFrame, setTurnoverTimeframe] = useState("12m")
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -98,16 +102,15 @@ export default function Component() {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-80 bg-white border-r p-6">
+        <aside className="w-90 bg-white border-r p-6">
           <div className="space-y-6">
             <div>
               <h2 className="text-xl font-semibold mb-4">Nurses</h2>
-
               <div className="space-y-4">
                 <div>
                   <h3 className="text-sm font-medium text-gray-700 mb-3">High risk</h3>
                   <div className="space-y-2">
-                    {highRiskNurses.map((nurse, index) => (
+                    {highRiskNurses.map((nurse) => (
                       <Link
                         key={nurse.id}
                         href={`/nurse/${nurse.id}`}
@@ -180,13 +183,28 @@ export default function Component() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl">Workforce Overview</CardTitle>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="bg-blue-50 text-blue-700 border-blue-200">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className={sdTimeFrame === "30d" ? "bg-blue-50 text-blue-700 border-blue-200" : ""}
+                    onClick={() => setSDTimeFrame("30d")}
+                  >
                     30 day
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className={sdTimeFrame === "3m" ? "bg-blue-50 text-blue-700 border-blue-200" : ""}
+                    onClick={() => setSDTimeFrame("3m")}
+                  >
                     3 months
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className={sdTimeFrame === "12m" ? "bg-blue-50 text-blue-700 border-blue-200" : ""}
+                    onClick={() => setSDTimeFrame("12m")}
+                  >
                     12 months
                   </Button>
                   <Button variant="outline" size="sm">
@@ -199,6 +217,7 @@ export default function Component() {
             <CardContent>
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-6">
+                  {/* ALL CURRENT NUMBERS ARE DUMMY DATA */}
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <div className="text-sm text-gray-600 mb-1"># of Nurses</div>
@@ -255,6 +274,7 @@ export default function Component() {
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={supplyDemandData}>
+                        <CartesianGrid vertical={false} />
                         <XAxis
                           dataKey="day"
                           axisLine={false}
@@ -284,13 +304,28 @@ export default function Component() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl">Turnover Analytics</CardTitle>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="bg-blue-50 text-blue-700 border-blue-200">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className={turnoverTimeFrame === "30d" ? "bg-blue-50 text-blue-700 border-blue-200" : ""}
+                    onClick={() => setTurnoverTimeframe("30d")}
+                  >
                     30 day
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className={turnoverTimeFrame === "3m" ? "bg-blue-50 text-blue-700 border-blue-200" : ""}
+                    onClick={() => setTurnoverTimeframe("3m")}
+                  >
                     3 months
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className={turnoverTimeFrame === "12m" ? "bg-blue-50 text-blue-700 border-blue-200" : ""}
+                    onClick={() => setTurnoverTimeframe("12m")}
+                  >
                     12 months
                   </Button>
                   <Button variant="outline" size="sm">
@@ -306,6 +341,7 @@ export default function Component() {
             <CardContent>
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-6">
+                  {/* ALL CURRENT NUMBERS ARE DUMMY DATA */}
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <div className="text-sm text-gray-600 mb-1"># of Nurses at risk</div>
@@ -350,6 +386,7 @@ export default function Component() {
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={turnoverData}>
+                        <CartesianGrid vertical={false} />
                         <XAxis
                           dataKey="month"
                           axisLine={false}

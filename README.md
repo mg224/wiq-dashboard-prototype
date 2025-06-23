@@ -34,7 +34,6 @@ npm install \
   lucide-react \
   tailwind-merge \
   tailwindcss-animate
-
 ```
 
 Install pnpm for easier installation of ShadCN UI Components

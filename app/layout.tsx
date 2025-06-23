@@ -2,9 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Nurse Turnover Dashboard',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'Healthcare Dashboard',
+  description: 'Nurse Turnover Dashboard'
 }
 
 export default function RootLayout({

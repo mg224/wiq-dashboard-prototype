@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Settings, Bell, ChevronRight, MoreHorizontal } from "lucide-react"
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from "recharts"
 import Link from "next/link"
 import { getNurseById, generateDefaultNurseData, allNurses, type Nurse } from "../lib/nurse-data"
 import { useEffect, useState } from "react"
@@ -127,7 +127,7 @@ export default function NurseProfile({ nurseId }: NurseProfileProps) {
 
       <div className="flex">
         {/* Left Sidebar */}
-        <aside className="w-80 bg-white border-r p-6">
+        <aside className="w-90 bg-white border-r p-6">
           <div className="space-y-6">
             {/* Profile Section */}
             <div className="text-center">
@@ -264,6 +264,7 @@ export default function NurseProfile({ nurseId }: NurseProfileProps) {
                         <div className="h-64">
                           <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={nurse.riskAnalytics.riskOutcomes}>
+                              <CartesianGrid vertical={false} />
                               <XAxis
                                 dataKey="time"
                                 axisLine={false}
@@ -274,7 +275,7 @@ export default function NurseProfile({ nurseId }: NurseProfileProps) {
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fontSize: 12, fill: "#6B7280" }}
-                                label={{ value: "Predicted Hazard", angle: -90, position: "insideLeft" }}
+                                label={{ value: "Predicted Hazard", angle: -90, position: "insideLeft", style: { textAnchor: 'middle' }}}
                               />
                               <Line
                                 type="monotone"
@@ -297,30 +298,8 @@ export default function NurseProfile({ nurseId }: NurseProfileProps) {
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-4">
-                          <div className="flex justify-end text-sm text-gray-600 mb-4">100%</div>
-                          <div className="space-y-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 rounded-full bg-blue-900"></div>
-                              <span className="text-sm">Overtime hours</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-                              <span className="text-sm">Workload</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 rounded-full bg-blue-200"></div>
-                              <span className="text-sm">Patient acuity</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-                              <span className="text-sm">Work environment</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 rounded-full bg-black"></div>
-                              <span className="text-sm">Other</span>
-                            </div>
-                          </div>
-                          <div className="mt-4">
+                          <div className="flex justify-center text-sm text-gray-600 mb-4">100%</div>
+                          <div className="mb-4">
                             <div className="h-8 bg-gray-200 rounded flex">
                               <div
                                 className="bg-blue-900 h-full rounded-l"
@@ -344,6 +323,28 @@ export default function NurseProfile({ nurseId }: NurseProfileProps) {
                               ></div>
                             </div>
                           </div>
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-blue-900"></div>
+                              <span className="text-sm">Overtime hours</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-blue-400"></div>
+                              <span className="text-sm">Workload</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-blue-200"></div>
+                              <span className="text-sm">Patient acuity</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                              <span className="text-sm">Work environment</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-black"></div>
+                              <span className="text-sm">Other</span>
+                            </div>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -352,31 +353,34 @@ export default function NurseProfile({ nurseId }: NurseProfileProps) {
                   {/* SDOH Insight */}
                   <Card>
                     <CardHeader>
-                      <CardTitle>SDOH Insight</CardTitle>
+                      <CardTitle className="mb-2">SDOH Insight</CardTitle>
                       <p className="text-sm text-gray-600">
                         External factors influencing {nurse.name.split(" ")[0]}'s risk profile based on CDC Social
                         Vulnerability Index (SVI).
                       </p>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-3 gap-4 text-sm font-medium">
+                      <div className="space-y-4 border border-gray-100 p-4 rounded-md">
+                        <div className="grid grid-cols-2 gap-4 text-sm font-medium">
                           <span>Category</span>
-                          <span></span>
                           <span>Score (0-100)</span>
                         </div>
                         {nurse.riskAnalytics.sdohInsights.map((item, index) => (
-                          <div key={index} className="grid grid-cols-3 gap-4 items-center">
+                          <div key={index} className="grid grid-cols-2 gap-4 items-center">
                             <span className="text-sm">{item.category}</span>
-                            <div className="flex-1">
-                              <div className="h-2 bg-gray-200 rounded-full">
+                            <div className="flex items-center gap-2">
+                              {/* Progress Bar */}
+                              <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                {/* Using 85 as the cutoff score here for red */}
                                 <div
-                                  className={`h-2 rounded-full ${item.color}`}
+                                  className={item.score >= 85 ? "h-full rounded-full transition-all duration-300 bg-red-500" : "h-full rounded-full transition-all duration-300 bg-yellow-500"}
                                   style={{ width: `${item.score}%` }}
-                                ></div>
+                                />
                               </div>
+
+                              {/* Score Text */}
+                              <span className="text-sm font-medium">{item.score}</span>
                             </div>
-                            <span className="text-sm font-medium">{item.score}</span>
                           </div>
                         ))}
                       </div>
@@ -384,18 +388,274 @@ export default function NurseProfile({ nurseId }: NurseProfileProps) {
                   </Card>
                 </TabsContent>
 
+                {/* Copied over Risk Analytics tab for now, renamed to Turnover as a placeholder; replace with desired components */}
                 <TabsContent value="turnover">
+                  <div className="grid grid-cols-2 gap-6">
+                    {/* Turnover Outcomes */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Turnover Outcomes</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-64">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={nurse.riskAnalytics.riskOutcomes}>
+                              <CartesianGrid vertical={false} />
+                              <XAxis
+                                dataKey="time"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 12, fill: "#6B7280" }}
+                              />
+                              <YAxis
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 12, fill: "#6B7280" }}
+                                label={{ value: "Predicted Hazard", angle: -90, position: "insideLeft", style: { textAnchor: 'middle' }}}
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="hazard"
+                                stroke="#1E40AF"
+                                strokeWidth={2}
+                                dot={{ fill: "#1E40AF", strokeWidth: 2, r: 4 }}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                        <div className="text-xs text-gray-500 text-center mt-2">Time</div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Turnover Drivers */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Turnover Drivers</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="flex justify-center text-sm text-gray-600 mb-4">100%</div>
+                          <div className="mb-4">
+                            <div className="h-8 bg-gray-200 rounded flex">
+                              <div
+                                className="bg-blue-900 h-full rounded-l"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.overtimeHours}%` }}
+                              ></div>
+                              <div
+                                className="bg-blue-400 h-full"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.workload}%` }}
+                              ></div>
+                              <div
+                                className="bg-blue-200 h-full"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.patientAcuity}%` }}
+                              ></div>
+                              <div
+                                className="bg-gray-400 h-full"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.workEnvironment}%` }}
+                              ></div>
+                              <div
+                                className="bg-black h-full rounded-r"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.other}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-blue-900"></div>
+                              <span className="text-sm">Overtime hours</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-blue-400"></div>
+                              <span className="text-sm">Workload</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-blue-200"></div>
+                              <span className="text-sm">Patient acuity</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                              <span className="text-sm">Work environment</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-black"></div>
+                              <span className="text-sm">Other</span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* SDOH Insight */}
                   <Card>
-                    <CardContent className="p-6">
-                      <div className="text-center text-gray-500">Turnover analytics for {nurse.name} would go here</div>
+                    <CardHeader>
+                      <CardTitle className="mb-2">SDOH Insight</CardTitle>
+                      <p className="text-sm text-gray-600">
+                        External factors influencing {nurse.name.split(" ")[0]}'s risk profile based on CDC Social
+                        Vulnerability Index (SVI).
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4 border border-gray-100 p-4 rounded-md">
+                        <div className="grid grid-cols-2 gap-4 text-sm font-medium">
+                          <span>Category</span>
+                          <span>Score (0-100)</span>
+                        </div>
+                        {nurse.riskAnalytics.sdohInsights.map((item, index) => (
+                          <div key={index} className="grid grid-cols-2 gap-4 items-center">
+                            <span className="text-sm">{item.category}</span>
+                            <div className="flex items-center gap-2">
+                              {/* Progress Bar */}
+                              <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                {/* Using 85 as the cutoff score here for red */}
+                                <div
+                                  className={item.score >= 85 ? "h-full rounded-full transition-all duration-300 bg-red-500" : "h-full rounded-full transition-all duration-300 bg-yellow-500"}
+                                  style={{ width: `${item.score}%` }}
+                                />
+                              </div>
+
+                              {/* Score Text */}
+                              <span className="text-sm font-medium">{item.score}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
 
+                {/* Copied over Risk Analytics tab for now, renamed to Turnover as a placeholder; replace with desired components */}
                 <TabsContent value="burnout">
+                  <div className="grid grid-cols-2 gap-6">
+                    {/* Burnout Outcomes */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Burnout Outcomes</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-64">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={nurse.riskAnalytics.riskOutcomes}>
+                              <CartesianGrid vertical={false} />
+                              <XAxis
+                                dataKey="time"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 12, fill: "#6B7280" }}
+                              />
+                              <YAxis
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 12, fill: "#6B7280" }}
+                                label={{ value: "Predicted Hazard", angle: -90, position: "insideLeft", style: { textAnchor: 'middle' }}}
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="hazard"
+                                stroke="#1E40AF"
+                                strokeWidth={2}
+                                dot={{ fill: "#1E40AF", strokeWidth: 2, r: 4 }}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                        <div className="text-xs text-gray-500 text-center mt-2">Time</div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Burnout Drivers */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Burnout Drivers</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="flex justify-center text-sm text-gray-600 mb-4">100%</div>
+                          <div className="mb-4">
+                            <div className="h-8 bg-gray-200 rounded flex">
+                              <div
+                                className="bg-blue-900 h-full rounded-l"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.overtimeHours}%` }}
+                              ></div>
+                              <div
+                                className="bg-blue-400 h-full"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.workload}%` }}
+                              ></div>
+                              <div
+                                className="bg-blue-200 h-full"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.patientAcuity}%` }}
+                              ></div>
+                              <div
+                                className="bg-gray-400 h-full"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.workEnvironment}%` }}
+                              ></div>
+                              <div
+                                className="bg-black h-full rounded-r"
+                                style={{ width: `${nurse.riskAnalytics.riskDrivers.other}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-blue-900"></div>
+                              <span className="text-sm">Overtime hours</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-blue-400"></div>
+                              <span className="text-sm">Workload</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-blue-200"></div>
+                              <span className="text-sm">Patient acuity</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                              <span className="text-sm">Work environment</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-black"></div>
+                              <span className="text-sm">Other</span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* SDOH Insight */}
                   <Card>
-                    <CardContent className="p-6">
-                      <div className="text-center text-gray-500">Burnout analytics for {nurse.name} would go here</div>
+                    <CardHeader>
+                      <CardTitle className="mb-2">SDOH Insight</CardTitle>
+                      <p className="text-sm text-gray-600">
+                        External factors influencing {nurse.name.split(" ")[0]}'s risk profile based on CDC Social
+                        Vulnerability Index (SVI).
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4 border border-gray-100 p-4 rounded-md">
+                        <div className="grid grid-cols-2 gap-4 text-sm font-medium">
+                          <span>Category</span>
+                          <span>Score (0-100)</span>
+                        </div>
+                        {nurse.riskAnalytics.sdohInsights.map((item, index) => (
+                          <div key={index} className="grid grid-cols-2 gap-4 items-center">
+                            <span className="text-sm">{item.category}</span>
+                            <div className="flex items-center gap-2">
+                              {/* Progress Bar */}
+                              <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                {/* Using 85 as the cutoff score here for red */}
+                                <div
+                                  className={item.score >= 85 ? "h-full rounded-full transition-all duration-300 bg-red-500" : "h-full rounded-full transition-all duration-300 bg-yellow-500"}
+                                  style={{ width: `${item.score}%` }}
+                                />
+                              </div>
+
+                              {/* Score Text */}
+                              <span className="text-sm font-medium">{item.score}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
