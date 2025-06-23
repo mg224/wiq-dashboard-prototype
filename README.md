@@ -12,9 +12,9 @@ A comprehensive healthcare workforce management dashboard for monitoring nurse r
 
 ## Installing Dependencies & Running Locally
 
-First, clone this repository using git clone and cd into the folder.
+First, clone this repository using `git clone <repo_url>` and cd into the folder using `cd <repo_name>`.
 
-Install the necessary packages
+Run the following commands to install the necessary packages. 
 
 ```bash
 npm install \
